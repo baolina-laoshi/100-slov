@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>100 первых слов: прописи</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700;800;900&family=Caveat:wght@600;700&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+:root{
+  --ink:#7A1C1C; --ink-dark:#5A1212; --text:#3B2323; --muted:#7A6A62;
+  --paper:#FBF7F0; --line:#E8E1D6; --card:#FFFFFF; --seal:#B3261E; --gold:#D9BC62; --ok:#2F6B45;
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--text);font-family:'Rubik',system-ui,sans-serif;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:28px 28px;min-height:100vh}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 18px 60px}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px}
+h1{margin:0;color:var(--ink);font-weight:900;font-size:clamp(36px,7vw,64px);line-height:.95;letter-spacing:-1px}
+.sub{font-family:'Caveat',cursive;font-weight:700;color:var(--ink);font-size:30px;transform:rotate(-2deg);display:inline-block;margin-top:6px}
+.progress{background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:10px 18px;font-weight:700;color:var(--ink);white-space:nowrap}
+.bar{height:8px;background:var(--line);border-radius:99px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ink);width:0;transition:width .3s}
+.tools{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+.tools input{flex:1 1 220px;min-height:44px;border:2px solid var(--line);border-radius:12px;padding:0 14px;font:inherit;background:var(--card);color:var(--text)}
+.tools input:focus{outline:none;border-color:var(--ink)}
+.chip{min-height:44px;padding:0 16px;border-radius:999px;border:2px solid var(--ink);background:var(--card);color:var(--ink);font-weight:700}
+.chip[aria-pressed="true"]{background:var(--ink);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.word{position:relative;background:var(--card);border:none;border-radius:14px;padding:14px 12px 12px;text-align:left;box-shadow:0 6px 16px rgba(60,30,20,.10);display:flex;flex-direction:column;gap:4px;min-height:124px;transition:transform .15s}
+.word:hover,.word:focus-visible{transform:translateY(-2px) rotate(-.5deg);outline:2px solid var(--ink)}
+.word .n{font-size:12px;color:var(--muted);font-weight:700}
+.word .h{font-family:'Noto Serif SC',serif;font-weight:900;font-size:40px;color:var(--ink);line-height:1.1}
+.word .p{font-weight:500;font-size:15px}
+.word .m{font-size:13px;color:var(--muted);line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.word.done::after{content:"";position:absolute;right:10px;top:10px;width:22px;height:22px;border-radius:6px;background:var(--seal) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat;transform:rotate(6deg)}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px}
+footer{margin-top:40px;text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+footer a{color:var(--ink);font-weight:700}
+
+/* panel */
+.overlay{position:fixed;inset:0;background:rgba(40,20,15,.45);display:none;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto;z-index:10}
+.overlay.open{display:flex}
+.panel{position:relative;width:100%;max-width:560px;background:var(--paper);border-radius:22px;padding:22px 20px 24px;box-shadow:0 20px 50px rgba(0,0,0,.25);
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px}
+.close{position:absolute;right:12px;top:12px;width:44px;height:44px;border-radius:50%;border:none;background:var(--card);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.top{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:700;font-size:14px;margin-bottom:6px}
+.wordline{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 14px}
+.big{font-family:'Noto Serif SC',serif;font-weight:900;font-size:56px;color:var(--ink);line-height:1}
+.pin{font-size:24px;font-weight:700;color:var(--text)}
+.say{width:44px;height:44px;border-radius:50%;border:2px solid var(--ink);background:var(--card);color:var(--ink);display:inline-flex;align-items:center;justify-content:center}
+.mean{font-family:'Caveat',cursive;font-weight:700;font-size:30px;color:var(--ink);margin:6px 0 14px;transform:rotate(-1deg)}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{min-width:56px;height:56px;border-radius:12px;border:2px solid var(--ink);background:var(--card);font-family:'Noto Serif SC',serif;font-weight:900;font-size:30px;color:var(--ink)}
+.tab[aria-pressed="true"]{background:var(--ink);color:#fff}
+.board{display:flex;justify-content:center}
+.tzg{position:relative;width:min(300px,78vw);aspect-ratio:1;background:var(--card);border:3px solid var(--ink);border-radius:6px;box-shadow:0 10px 24px rgba(60,30,20,.15);touch-action:none}
+.tzg svg.guide{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.tzg .hw{position:absolute;inset:0}
+.status{min-height:26px;text-align:center;font-weight:700;color:var(--ink);margin:12px 0 6px}
+.status.good{color:var(--ok)}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.act{min-height:48px;border-radius:12px;border:2px solid var(--ink);background:var(--card);color:var(--ink);font-weight:700;padding:0 10px}
+.act.primary{background:var(--ink);color:#fff}
+.act:focus-visible,.chip:focus-visible,.tab:focus-visible,.nav button:focus-visible,.say:focus-visible,.close:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.learn{display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-weight:700;min-height:44px}
+.learn input{width:24px;height:24px;accent-color:var(--seal)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
+.nav button{flex:1;min-height:48px;border-radius:999px;border:none;background:var(--card);color:var(--ink);font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.note{font-size:13px;color:var(--muted);text-align:center;margin-top:8px}
+@media (max-width:420px){.actions{grid-template-columns:1fr 1fr}.big{font-size:46px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>100 первых слов</h1>
+      <span class="sub">прописи с порядком черт от @_baolina</span>
+    </div>
+    <div class="progress" aria-live="polite">
+      <span id="progText">Выучено 0 из 100</span>
+      <div class="bar"><i id="progBar"></i></div>
+    </div>
+  </header>
+
+  <div class="tools">
+    <label for="q" style="position:absolute;left:-9999px">Поиск</label>
+    <input id="q" type="search" placeholder="Поиск: иероглиф, пиньинь или перевод">
+    <button class="chip" data-f="all" aria-pressed="true">Все</button>
+    <button class="chip" data-f="todo" aria-pressed="false">Учу</button>
+    <button class="chip" data-f="done" aria-pressed="false">Выучено</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Больше про иероглифы в телеграм-канале <a href="https://t.me/baolinna">@baolinna</a> и в инстаграме <a href="https://instagram.com/_baolina">@_baolina</a><br>
+    Как пользоваться: нажми на слово, посмотри порядок черт, потом напиши иероглиф сам по клеточке.<br>
+    Данные о чертах: проект Make Me a Hanzi (Arphic Public License), анимация: Hanzi Writer.
+  </footer>
+</div>
+
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="pWord">
+    <button class="close" id="close" aria-label="Закрыть">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+    <div class="top"><span id="pNum"></span></div>
+    <div class="wordline">
+      <span class="big" id="pWord"></span>
+      <span class="pin" id="pPin"></span>
+      <button class="say" id="say" aria-label="Послушать произношение">
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 010 7M18.5 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <div class="mean" id="pMean"></div>
+    <div class="tabs" id="tabs" role="group" aria-label="Иероглифы в слове"></div>
+    <div class="board">
+      <div class="tzg" id="tzg">
+        <svg class="guide" viewBox="0 0 100 100" aria-hidden="true">
+          <line x1="0" y1="0" x2="100" y2="100" stroke="#E2C9C4" stroke-width=".6" stroke-dasharray="2 2"/>
+          <line x1="100" y1="0" x2="0" y2="100" stroke="#E2C9C4" stroke-width=".6" stroke-dasharray="2 2"/>
+          <line x1="50" y1="0" x2="50" y2="100" stroke="#E2C9C4" stroke-width=".8" stroke-dasharray="3 2"/>
+          <line x1="0" y1="50" x2="100" y2="50" stroke="#E2C9C4" stroke-width=".8" stroke-dasharray="3 2"/>
+        </svg>
+        <div class="hw" id="hw"></div>
+      </div>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+    <div class="actions">
+      <button class="act primary" id="aAnim">Порядок черт</button>
+      <button class="act" id="aTrace">Обвести</button>
+      <button class="act" id="aSelf">По памяти</button>
+      <button class="act" id="aReset">Сбросить</button>
+    </div>
+    <label class="learn"><input type="checkbox" id="learned"> Слово выучено</label>
+    <div class="nav">
+      <button id="prev">← Назад</button>
+      <button id="next">Дальше →</button>
+    </div>
+    <div class="note" id="sayNote"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.7/dist/hanzi-writer.min.js"></script>
+<script>
+const DATA = {"words":[{"n":1,"w":"我","p":"wǒ","m":"я, меня"},{"n":2,"w":"你","p":"nǐ","m":"ты, вы"},{"n":3,"w":"他","p":"tā","m":"он"},{"n":4,"w":"她","p":"tā","m":"она"},{"n":5,"w":"我们","p":"wǒmen","m":"мы"},{"n":6,"w":"这","p":"zhè","m":"этот, это"},{"n":7,"w":"那","p":"nà","m":"тот, то"},{"n":8,"w":"谁","p":"shéi","m":"кто"},{"n":9,"w":"什么","p":"shénme","m":"что, какой"},{"n":10,"w":"哪","p":"nǎ","m":"который, какой"},{"n":11,"w":"哪儿","p":"nǎr","m":"где, куда"},{"n":12,"w":"怎么","p":"zěnme","m":"как"},{"n":13,"w":"为什么","p":"wèishénme","m":"почему"},{"n":14,"w":"几","p":"jǐ","m":"сколько, какой по счёту"},{"n":15,"w":"多少","p":"duōshao","m":"сколько"},{"n":16,"w":"的","p":"de","m":"частица принадлежности и определения"},{"n":17,"w":"了","p":"le","m":"частица завершённости или изменения ситуации"},{"n":18,"w":"吗","p":"ma","m":"вопросительная частица"},{"n":19,"w":"呢","p":"ne","m":"частица вопроса или продолжения темы"},{"n":20,"w":"不","p":"bù","m":"не"},{"n":21,"w":"没","p":"méi","m":"не; не было"},{"n":22,"w":"很","p":"hěn","m":"очень; связка перед прилагательным"},{"n":23,"w":"也","p":"yě","m":"тоже"},{"n":24,"w":"都","p":"dōu","m":"все; оба"},{"n":25,"w":"和","p":"hé","m":"и; с"},{"n":26,"w":"在","p":"zài","m":"находиться; в, на"},{"n":27,"w":"有","p":"yǒu","m":"иметь; есть, имеется"},{"n":28,"w":"是","p":"shì","m":"быть, являться"},{"n":29,"w":"可以","p":"kěyǐ","m":"можно; мочь"},{"n":30,"w":"会","p":"huì","m":"уметь; мочь; будущее по контексту"},{"n":31,"w":"要","p":"yào","m":"хотеть; нужно; собираться"},{"n":32,"w":"想","p":"xiǎng","m":"хотеть; думать"},{"n":33,"w":"去","p":"qù","m":"идти, ехать"},{"n":34,"w":"来","p":"lái","m":"приходить, приезжать"},{"n":35,"w":"看","p":"kàn","m":"смотреть; читать"},{"n":36,"w":"听","p":"tīng","m":"слушать"},{"n":37,"w":"说","p":"shuō","m":"говорить"},{"n":38,"w":"读","p":"dú","m":"читать"},{"n":39,"w":"写","p":"xiě","m":"писать"},{"n":40,"w":"吃","p":"chī","m":"есть"},{"n":41,"w":"喝","p":"hē","m":"пить"},{"n":42,"w":"买","p":"mǎi","m":"покупать"},{"n":43,"w":"做","p":"zuò","m":"делать"},{"n":44,"w":"工作","p":"gōngzuò","m":"работать; работа"},{"n":45,"w":"学习","p":"xuéxí","m":"учиться, изучать"},{"n":46,"w":"认识","p":"rènshi","m":"быть знакомым; знать человека"},{"n":47,"w":"知道","p":"zhīdào","m":"знать, быть в курсе"},{"n":48,"w":"喜欢","p":"xǐhuan","m":"нравиться, любить"},{"n":49,"w":"觉得","p":"juéde","m":"считать, полагать; чувствовать"},{"n":50,"w":"给","p":"gěi","m":"давать; для, кому-то"},{"n":51,"w":"叫","p":"jiào","m":"звать; называться"},{"n":52,"w":"住","p":"zhù","m":"жить, проживать"},{"n":53,"w":"坐","p":"zuò","m":"сидеть; ехать на транспорте"},{"n":54,"w":"开","p":"kāi","m":"открывать; включать; вести машину"},{"n":55,"w":"找","p":"zhǎo","m":"искать"},{"n":56,"w":"等","p":"děng","m":"ждать"},{"n":57,"w":"帮助","p":"bāngzhù","m":"помогать; помощь"},{"n":58,"w":"见面","p":"jiànmiàn","m":"встречаться"},{"n":59,"w":"需要","p":"xūyào","m":"нуждаться; требоваться"},{"n":60,"w":"因为","p":"yīnwèi","m":"потому что"},{"n":61,"w":"人","p":"rén","m":"человек; люди"},{"n":62,"w":"朋友","p":"péngyou","m":"друг"},{"n":63,"w":"家","p":"jiā","m":"дом; семья"},{"n":64,"w":"学校","p":"xuéxiào","m":"школа"},{"n":65,"w":"老师","p":"lǎoshī","m":"учитель"},{"n":66,"w":"学生","p":"xuésheng","m":"ученик, студент"},{"n":67,"w":"今天","p":"jīntiān","m":"сегодня"},{"n":68,"w":"明天","p":"míngtiān","m":"завтра"},{"n":69,"w":"昨天","p":"zuótiān","m":"вчера"},{"n":70,"w":"现在","p":"xiànzài","m":"сейчас"},{"n":71,"w":"时间","p":"shíjiān","m":"время"},{"n":72,"w":"年","p":"nián","m":"год"},{"n":73,"w":"月","p":"yuè","m":"месяц; луна"},{"n":74,"w":"天","p":"tiān","m":"день; небо"},{"n":75,"w":"时候","p":"shíhou","m":"время, момент"},{"n":76,"w":"里","p":"lǐ","m":"внутри"},{"n":77,"w":"上","p":"shàng","m":"на, сверху; предыдущий"},{"n":78,"w":"下","p":"xià","m":"под, снизу; следующий"},{"n":79,"w":"这里","p":"zhèlǐ","m":"здесь"},{"n":80,"w":"那里","p":"nàlǐ","m":"там"},{"n":81,"w":"好","p":"hǎo","m":"хороший; хорошо"},{"n":82,"w":"大","p":"dà","m":"большой"},{"n":83,"w":"小","p":"xiǎo","m":"маленький"},{"n":84,"w":"多","p":"duō","m":"много"},{"n":85,"w":"少","p":"shǎo","m":"мало"},{"n":86,"w":"新","p":"xīn","m":"новый"},{"n":87,"w":"热","p":"rè","m":"жаркий; горячий"},{"n":88,"w":"冷","p":"lěng","m":"холодный"},{"n":89,"w":"忙","p":"máng","m":"занятый"},{"n":90,"w":"高兴","p":"gāoxìng","m":"радостный, довольный"},{"n":91,"w":"漂亮","p":"piàoliang","m":"красивый"},{"n":92,"w":"水","p":"shuǐ","m":"вода"},{"n":93,"w":"茶","p":"chá","m":"чай"},{"n":94,"w":"饭","p":"fàn","m":"рис; еда"},{"n":95,"w":"钱","p":"qián","m":"деньги"},{"n":96,"w":"东西","p":"dōngxi","m":"вещь, предмет"},{"n":97,"w":"名字","p":"míngzi","m":"имя"},{"n":98,"w":"手机","p":"shǒujī","m":"мобильный телефон"},{"n":99,"w":"车","p":"chē","m":"машина; транспорт"},{"n":100,"w":"一点儿","p":"yìdiǎnr","m":"немного"}]};
+const WORDS = DATA.words;
+const store = {
+  get(){ try { return JSON.parse(localStorage.getItem('baolina100') || '[]'); } catch(e){ return []; } },
+  set(v){ try { localStorage.setItem('baolina100', JSON.stringify(v)); } catch(e){} }
+};
+let learned = new Set(store.get());
+let filter = 'all', query = '';
+const grid = document.getElementById('grid');
+
+function renderProgress(){
+  const n = learned.size;
+  document.getElementById('progText').textContent = 'Выучено ' + n + ' из ' + WORDS.length;
+  document.getElementById('progBar').style.width = (n / WORDS.length * 100) + '%';
+}
+function renderGrid(){
+  grid.innerHTML = '';
+  const q = query.trim().toLowerCase();
+  const list = WORDS.filter(w => {
+    if (filter === 'done' && !learned.has(w.n)) return false;
+    if (filter === 'todo' && learned.has(w.n)) return false;
+    if (!q) return true;
+    const plain = w.p.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+    return w.w.includes(q) || w.p.toLowerCase().includes(q) || plain.includes(q) || w.m.toLowerCase().includes(q);
+  });
+  if (!list.length){ grid.innerHTML = '<div class="empty">Ничего не нашлось</div>'; return; }
+  for (const w of list){
+    const b = document.createElement('button');
+    b.className = 'word' + (learned.has(w.n) ? ' done' : '');
+    b.setAttribute('aria-label', w.w + ', ' + w.p + ', ' + w.m + (learned.has(w.n) ? ', выучено' : ''));
+    b.innerHTML = '<span class="n">' + w.n + '</span><span class="h"></span><span class="p"></span><span class="m"></span>';
+    b.querySelector('.h').textContent = w.w;
+    b.querySelector('.p').textContent = w.p;
+    b.querySelector('.m').textContent = w.m;
+    b.addEventListener('click', () => openWord(WORDS.indexOf(w)));
+    grid.appendChild(b);
+  }
+}
+document.getElementById('q').addEventListener('input', e => { query = e.target.value; renderGrid(); });
+document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+  filter = c.dataset.f;
+  document.querySelectorAll('.chip').forEach(x => x.setAttribute('aria-pressed', String(x === c)));
+  renderGrid();
+}));
+
+/* panel */
+const overlay = document.getElementById('overlay');
+const statusEl = document.getElementById('status');
+let cur = 0, charIdx = 0, writer = null, lastFocus = null;
+
+function sizeOf(){ return document.getElementById('tzg').clientWidth - 6; }
+function makeWriter(ch){
+  const hw = document.getElementById('hw');
+  hw.innerHTML = '';
+  const s = sizeOf();
+  writer = HanziWriter.create(hw, ch, {
+    width: s, height: s, padding: Math.round(s * 0.06),
+    strokeColor: '#7A1C1C', radicalColor: '#B3261E', outlineColor: '#EADCD6',
+    drawingColor: '#3B2323', drawingWidth: Math.max(14, Math.round(s / 18)),
+    highlightColor: '#D9BC62', strokeAnimationSpeed: 1, delayBetweenStrokes: 220,
+    showCharacter: true, showOutline: true
+  });
+}
+function setStatus(t, good){ statusEl.textContent = t || ''; statusEl.classList.toggle('good', !!good); }
+
+function openWord(i){
+  cur = (i + WORDS.length) % WORDS.length; charIdx = 0;
+  const w = WORDS[cur];
+  document.getElementById('pNum').textContent = 'Слово ' + w.n + ' из ' + WORDS.length;
+  document.getElementById('pWord').textContent = w.w;
+  document.getElementById('pPin').textContent = w.p;
+  document.getElementById('pMean').textContent = w.m;
+  document.getElementById('learned').checked = learned.has(w.n);
+  document.getElementById('sayNote').textContent = '';
+  const tabs = document.getElementById('tabs');
+  tabs.innerHTML = '';
+  const chars = [...w.w];
+  tabs.style.display = chars.length > 1 ? 'flex' : 'none';
+  chars.forEach((c, k) => {
+    const t = document.createElement('button');
+    t.className = 'tab'; t.textContent = c;
+    t.setAttribute('aria-pressed', String(k === 0));
+    t.setAttribute('aria-label', 'Иероглиф ' + c);
+    t.addEventListener('click', () => { charIdx = k; tabs.querySelectorAll('.tab').forEach((x, j) => x.setAttribute('aria-pressed', String(j === k))); showChar(); });
+    tabs.appendChild(t);
+  });
+  if (!overlay.classList.contains('open')){
+    lastFocus = document.activeElement;
+    overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow = 'hidden';
+  }
+  showChar();
+  document.getElementById('aAnim').focus();
+}
+function showChar(){
+  const c = [...WORDS[cur].w][charIdx];
+  makeWriter(c);
+  setStatus('Нажми «Порядок черт», чтобы посмотреть, как пишется ' + c);
+}
+function closePanel(){
+  overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true');
+  document.body.style.overflow = '';
+  if (writer) writer.cancelQuiz && writer.cancelQuiz();
+  renderGrid();
+  if (lastFocus) lastFocus.focus();
+}
+document.getElementById('close').addEventListener('click', closePanel);
+overlay.addEventListener('click', e => { if (e.target === overlay) closePanel(); });
+document.addEventListener('keydown', e => {
+  if (!overlay.classList.contains('open')) return;
+  if (e.key === 'Escape') closePanel();
+});
+
+document.getElementById('aAnim').addEventListener('click', () => {
+  writer.cancelQuiz(); writer.showCharacter(); writer.showOutline();
+  setStatus('Смотри внимательно на порядок черт');
+  writer.animateCharacter({ onComplete: () => setStatus('Теперь попробуй обвести') });
+});
+function startQuiz(outline){
+  writer.cancelQuiz(); writer.hideCharacter();
+  outline ? writer.showOutline() : writer.hideOutline();
+  setStatus(outline ? 'Обведи черты по порядку' : 'Пиши по памяти. Подскажу после трёх ошибок');
+  writer.quiz({
+    showHintAfterMisses: outline ? 2 : 3,
+    leniency: 1.2,
+    onMistake: s => setStatus('Не та черта. Ошибок в этой черте: ' + s.mistakesOnStroke),
+    onCorrectStroke: s => setStatus('Верно! Осталось черт: ' + s.strokesRemaining),
+    onComplete: s => {
+      const m = s.totalMistakes;
+      setStatus(m === 0 ? 'Идеально, ни одной ошибки!' : 'Готово! Ошибок: ' + m, true);
+      if (!outline) writer.showOutline();
+    }
+  });
+}
+document.getElementById('aTrace').addEventListener('click', () => startQuiz(true));
+document.getElementById('aSelf').addEventListener('click', () => startQuiz(false));
+document.getElementById('aReset').addEventListener('click', showChar);
+document.getElementById('prev').addEventListener('click', () => openWord(cur - 1));
+document.getElementById('next').addEventListener('click', () => openWord(cur + 1));
+document.getElementById('learned').addEventListener('change', e => {
+  const n = WORDS[cur].n;
+  e.target.checked ? learned.add(n) : learned.delete(n);
+  store.set([...learned]); renderProgress();
+});
+document.getElementById('say').addEventListener('click', () => {
+  const note = document.getElementById('sayNote');
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth) throw new Error('no');
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(WORDS[cur].w);
+    u.lang = 'zh-CN'; u.rate = 0.8;
+    const v = synth.getVoices().find(v => /zh[-_]CN|cmn/i.test(v.lang));
+    if (v) u.voice = v;
+    else note.textContent = 'Если звука нет, в твоём браузере не установлен китайский голос.';
+    synth.speak(u);
+  } catch (err) {
+    note.textContent = 'Озвучка в этом браузере недоступна.';
+  }
+});
+let resizeT;
+window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (overlay.classList.contains('open')) showChar(); }, 200); });
+
+renderProgress(); renderGrid();
+</script>
+</body>
+</html>
